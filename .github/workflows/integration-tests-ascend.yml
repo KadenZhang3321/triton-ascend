@@ -104,12 +104,12 @@ jobs:
           fi
 
           ${PYTHON} -m pip uninstall triton-ascend triton -y || true
+          ${PYTHON} -m pip install uv
           ccache --zero-stats
           NUM_PROCS=$(( $(nproc) / 3 ))
           if [ "$NUM_PROCS" -lt 1 ]; then NUM_PROCS=1; fi
           MAX_JOBS="$NUM_PROCS" ${PYTHON} setup.py bdist_wheel
-          ${PYTHON} -m pip install uv
-          uv pip install --python "${PYTHON}" dist/*.whl
+          uv pip install --python "${PYTHON}" --no-deps dist/*.whl
 
       - name: CCache stats
         run: ccache --print-stats
