@@ -24,6 +24,7 @@ jobs:
     env:
       PROTON_SKIP_PC_SAMPLING_TEST: 1
       PYTHON: "python${{ matrix.python_version }}"
+      UV_SYSTEM_PYTHON: 1
 
     steps:
       - name: Checkout
@@ -100,12 +101,12 @@ jobs:
           fi
 
           ${PYTHON} -m pip uninstall triton-ascend triton -y || true
+          ${PYTHON} -m pip install uv
           ccache --zero-stats
           NUM_PROCS=$(( $(nproc) / 3 ))
           if [ "$NUM_PROCS" -lt 1 ]; then NUM_PROCS=1; fi
           MAX_JOBS="$NUM_PROCS" ${PYTHON} setup.py bdist_wheel
-          ${PYTHON} -m pip install dist/*.whl \
-            -i https://repo.huaweicloud.com/repository/pypi/simple/ --force-reinstall
+          uv pip install --python "${PYTHON}" -i https://repo.huaweicloud.com/repository/pypi/simple/ dist/*.whl
 
       - name: CCache stats
         run: ccache --print-stats
