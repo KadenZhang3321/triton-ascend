@@ -104,7 +104,7 @@ jobs:
           if [ "$NUM_PROCS" -lt 1 ]; then NUM_PROCS=1; fi
           MAX_JOBS="$NUM_PROCS" \
           ${PYTHON} setup.py bdist_wheel
-          ${PYTHON} -m pip install dist/*.whl --force-reinstall
+          ${PYTHON} -m pip install dist/*.whl
 
       - name: CCache stats
         run: ccache --print-stats
