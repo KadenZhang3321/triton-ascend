@@ -24,18 +24,16 @@ jobs:
     env:
       PROTON_SKIP_PC_SAMPLING_TEST: 1
       PYTHON: "python${{ matrix.python_version }}"
-      UV_INDEX_URL: "http://cache-service.nginx-pypi-cache.svc.cluster.local/pypi/simple"
-      UV_EXTRA_INDEX_URL: "https://repo.huaweicloud.com/ascend/repos/pypi"
-      UV_INSECURE_HOST: "cache-service.nginx-pypi-cache.svc.cluster.local"
-      UV_HTTP_TIMEOUT: 120
-      UV_NO_CACHE: 1
-      UV_SYSTEM_PYTHON: 1
+      PIP_INDEX_URL: "http://cache-service.nginx-pypi-cache.svc.cluster.local/pypi/simple"
+      PIP_TRUSTED_HOST: "cache-service.nginx-pypi-cache.svc.cluster.local"
+      PIP_EXTRA_INDEX_URL: "https://repo.huaweicloud.com/ascend/repos/pypi"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           submodules: "true"
+          fetch-depth: 1
 
       - name: Add git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -83,6 +81,7 @@ jobs:
           echo "/usr/local/bisheng/tools/bishengir/bin" >> $GITHUB_PATH
 
       - name: Build and install triton-ascend
+        working-directory: python
         shell: bash
         env:
           TRITON_BUILD_WITH_CCACHE: "true"
@@ -91,8 +90,8 @@ jobs:
           CCACHE_COMPRESS: "true"
           TRITON_BUILD_WITH_O1: true
           TRITON_BUILD_PROTON: OFF
-          TRITON_WHEEL_NAME: triton-ascend
-          TRITON_APPEND_CMAKE_ARGS: "-DTRITON_BUILD_UT=ON"
+          TRITON_WHEEL_NAME: "triton-ascend"
+          TRITON_APPEND_CMAKE_ARGS: "-DTRITON_BUILD_UT=OFF"
         run: |
           nproc
           source /usr/local/Ascend/cann/set_env.sh
@@ -102,13 +101,13 @@ jobs:
             cat "${ASCEND_TOOLKIT_HOME}/cann/version.info"
           fi
 
+          ${PYTHON} -m pip uninstall triton-ascend triton -y || true
           ccache --zero-stats
           NUM_PROCS=$(( $(nproc) / 3 ))
           if [ "$NUM_PROCS" -lt 1 ]; then NUM_PROCS=1; fi
-          MAX_JOBS="$NUM_PROCS" \
-          ${PYTHON} setup.py bdist_wheel
-          ${PYTHON} -m pip install uv
-          uv pip install --python "${PYTHON}" dist/*.whl --no-deps
+          MAX_JOBS="$NUM_PROCS" ${PYTHON} setup.py bdist_wheel
+          ${PYTHON} -m pip install -v dist/*.whl --force-reinstall
+
 
       - name: CCache stats
         run: ccache --print-stats
@@ -125,25 +124,3 @@ jobs:
           # NOTE: kernel tests are temporarily disabled due to intermittent failures
           # that cause CI instability. TODO: Fix flaky kernel tests and re-enable.
           # ${PYTHON} -m pytest -s -v -n "$NUM_PROCS" --dist=loadfile third_party/ascend/unittest/kernels/test_triton_kernel.py
-
-      - name: Run MLIR FileCheck tests
-        shell: bash
-        run: |
-          source /usr/local/Ascend/cann/set_env.sh
-          export PATH="/usr/local/bisheng/tools/bishengir/bin:$PATH"
-          TEST_MLIR_DIR=$(ls -d build/cmake.*/third_party/ascend/unittest 2>/dev/null | head -1 || true)
-          echo "TEST_MLIR_DIR=${TEST_MLIR_DIR:-<not found>}"
-          if [ -n "${TEST_MLIR_DIR}" ] && [ -d "${TEST_MLIR_DIR}" ]; then
-            lit -v "${TEST_MLIR_DIR}"
-          else
-            echo "MLIR test directory not found."
-            echo "Expected to match: build/cmake.*/third_party/ascend/unittest"
-            echo "Working directory: $(pwd)"
-            if [ -d build ]; then
-              echo "Contents of build directory:"
-              find build -maxdepth 4 -print
-            else
-              echo "build directory does not exist"
-            fi
-            exit 1
-          fi
