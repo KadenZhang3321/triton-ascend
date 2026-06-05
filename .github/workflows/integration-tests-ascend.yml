@@ -30,6 +30,8 @@ jobs:
       UV_HTTP_TIMEOUT: 120
       UV_NO_CACHE: 1
       UV_SYSTEM_PYTHON: 1
+      PIP_INDEX_URL: "http://cache-service.nginx-pypi-cache.svc.cluster.local/pypi/simple"
+      PIP_TRUSTED_HOST: "cache-service.nginx-pypi-cache.svc.cluster.local"
 
     steps:
       - name: Checkout
@@ -104,12 +106,11 @@ jobs:
           fi
 
           ${PYTHON} -m pip uninstall triton-ascend triton -y || true
-          ${PYTHON} -m pip install uv
           ccache --zero-stats
           NUM_PROCS=$(( $(nproc) / 3 ))
           if [ "$NUM_PROCS" -lt 1 ]; then NUM_PROCS=1; fi
           MAX_JOBS="$NUM_PROCS" ${PYTHON} setup.py bdist_wheel
-          uv pip install --python "${PYTHON}" --no-deps dist/*.whl
+          ${PYTHON} -m pip install dist/*.whl --force-reinstall
 
       - name: CCache stats
         run: ccache --print-stats
