@@ -2,8 +2,8 @@ name: "Stale issue & PR cleanup"
 
 on:
   schedule:
-    - cron: "37 3 * * *" # 每天 UTC 3:37 跑一次
-  workflow_dispatch:       # 也可以手动触发
+    - cron: "37 3 * * *" # Runs daily at UTC 3:37
+  workflow_dispatch:       # Manual trigger supported
 
 permissions:
   issues: write
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/stale@v9
         with:
-          # Issue 相关
+          # Issues
           days-before-issue-stale: 30
           days-before-issue-close: 14
           stale-issue-label: "stale"
@@ -28,7 +28,7 @@ jobs:
             This issue has been automatically closed due to prolonged inactivity.
             If the problem still exists, feel free to reopen or create a new issue.
 
-          # PR 相关
+          # PRs
           days-before-pr-stale: 45
           days-before-pr-close: 14
           stale-pr-label: "stale"
@@ -41,15 +41,15 @@ jobs:
             This PR has been automatically closed due to prolonged inactivity.
             If it still needs to be merged, feel free to reopen.
 
-          # 排除的标签（有这些标签的不处理）
+          # Labels to exempt from stale checks
           exempt-issue-labels: "P0,bug,enhancement,community-task"
           exempt-pr-labels: "P0,WIP"
 
-          # 有人活动后自动去掉 stale 标签
+          # Auto-remove stale label when activity occurs
           remove-stale-when-updated: true
 
-          # 按最近更新时间为准（不是创建时间）
+          # Use last-update time instead of creation time
           days-before-stale-override: true
 
-          # 每次最多处理的数量，防止一次性关太多
+          # Per-run limit to avoid closing too many at once
           operations-per-run: 30
