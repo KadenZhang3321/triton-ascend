@@ -10,7 +10,7 @@
     - [Triton-Ascend 资料站](https://triton-ascend.readthedocs.io/zh-cn/latest/index.html)
     - [问题反馈](https://github.com/triton-lang/triton-ascend/issues)
 
---- 
+---
 
 # Triton-Ascend
 Triton-Ascend是面向昇腾平台构建的Triton编译框架，旨在让Triton代码能够在昇腾硬件上高效运行。详见[Triton-Ascend](https://github.com/triton-lang/triton-ascend/blob/main/README_zh.md)。
@@ -29,13 +29,13 @@ Tag遵循以下格式：<br/>
 ## Triton-Ascend 镜像
 ### Release 3.2.1
 #### 镜像内关键组件
-| 组件              | 版本          | 
+| 组件              | 版本          |
 |-----------------|-------------|
-| Triton-Ascend   | 3.2.1       | 
+| Triton-Ascend   | 3.2.1       |
 | CANN            | 9.0.0       |
 | Torch-npu       | 2.7.1.post4 |
 
-#### 镜像列表 
+#### 镜像列表
 
 | 镜像标签                            | Dockerfile         | 镜像下载命令                                                       |
 |----------------------------------|-------------------|--------------------------------------------------------------------|
@@ -113,3 +113,4 @@ RUN apt update -y && \
 # 许可证
 查看镜像中包含的CANN、Torch-npu、Triton-Ascend软件的[许可证信息](https://www.hiascend.com/zh/software/protocol)。<br/>
 与所有容器镜像一样，预装软件包（Python、系统库等）可能受其自身许可证约束。
+
