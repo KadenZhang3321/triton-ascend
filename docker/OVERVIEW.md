@@ -114,4 +114,3 @@ RUN apt update -y && \
 # License
 View the license information of the CANN, Torch-npu and Triton-Ascend software contained in the image. For details, visit [License](https://www.hiascend.com/en/software/protocol).<br/>
 As with all container images, the pre-installed software packages (such as Python and system libraries) may be subject to their own licenses.
-

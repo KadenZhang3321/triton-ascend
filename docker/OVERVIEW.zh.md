@@ -113,4 +113,3 @@ RUN apt update -y && \
 # 许可证
 查看镜像中包含的CANN、Torch-npu、Triton-Ascend软件的[许可证信息](https://www.hiascend.com/zh/software/protocol)。<br/>
 与所有容器镜像一样，预装软件包（Python、系统库等）可能受其自身许可证约束。
-
