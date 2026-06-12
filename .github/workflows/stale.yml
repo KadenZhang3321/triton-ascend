@@ -1,0 +1,51 @@
+name: "Stale issue & PR cleanup"
+
+on:
+  schedule:
+    - cron: "37 3 * * *" # 每天 UTC 3:37 跑一次
+  workflow_dispatch:       # 也可以手动触发
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          # Issue 相关
+          days-before-issue-stale: 30
+          days-before-issue-close: 14
+          stale-issue-label: "stale"
+          stale-issue-message: >
+            该 issue 已被自动标记为 **stale**，因为过去 30 天没有活动。
+            如果 14 天内仍无回复，它将被自动关闭。
+            如需继续跟进，请在此 issue 下评论即可自动移除 stale 标签。
+          close-issue-message: >
+            该 issue 因长时间无活动已被自动关闭。如问题仍然存在，欢迎重新打开或新建 issue。
+
+          # PR 相关
+          days-before-pr-stale: 45
+          days-before-pr-close: 14
+          stale-pr-label: "stale"
+          stale-pr-message: >
+            该 PR 已被自动标记为 **stale**，因为过去 45 天没有活动。
+            如果 14 天内仍无更新，它将被自动关闭。
+            如需继续，请 rebase 或评论即可自动移除 stale 标签。
+          close-pr-message: >
+            该 PR 因长时间无活动已被自动关闭。如仍需合并，请重新打开。
+
+          # 排除的标签（有这些标签的不处理）
+          exempt-issue-labels: "P0,bug,enhancement,community-task"
+          exempt-pr-labels: "P0,WIP"
+
+          # 有人活动后自动去掉 stale 标签
+          remove-stale-when-updated: true
+
+          # 按最近更新时间为准（不是创建时间）
+          days-before-stale-override: true
+
+          # 每次最多处理的数量，防止一次性关太多
+          operations-per-run: 30
