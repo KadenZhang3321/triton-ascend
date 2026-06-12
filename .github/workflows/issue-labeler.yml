@@ -20,7 +20,7 @@ jobs:
 
             const labels = [];
 
-            // ── 组件 ──
+            // ── component ──
             if (/ssbuffer|splitdataflow|allocmulticache|crossdeps|markop|planCube/i.test(text)) {
               labels.push("ssbuffer");
             }
@@ -28,7 +28,7 @@ jobs:
               labels.push("autotune");
             }
 
-            // ── 类型（复用已有标签）──
+            // ── type (reuses existing labels) ──
             if (/精度|precision|miscompiled|结果不准|结果不对|incorrect result/i.test(text)) {
               labels.push("bug", "performance");
             }
