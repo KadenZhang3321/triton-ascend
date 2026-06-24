@@ -70,7 +70,7 @@ jobs:
           BODY+=$'\n'
 
           for owner in $(printf '%s\n' "${!OWNER_FILES[@]}" | sort -u); do
-            BODY+=$'\n'"**@${owner}**"
+            BODY+=$'\n'"**${owner}**"
             BODY+=$(printf '%s' "${OWNER_FILES[$owner]}" | sort -u)
             BODY+=$'\n'
           done
